@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tebak Kata</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #111;
+        color: #fff;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+    }
+    .container {
+        width: 100%;
+        max-width: 500px;
+        text-align: center;
+    }
+    h1 { margin-bottom: 10px; }
+
+    #progress {
+        width: 100%;
+        height: 10px;
+        background: #333;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+    #progress-bar {
+        height: 100%;
+        width: 0%;
+        background: #4caf50;
+    }
+
+    #question {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        border: none;
+        font-size: 16px;
+    }
+
+    button {
+        padding: 12px;
+        width: 100%;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        background: #1e1e1e;
+        color: white;
+        font-size: 16px;
+        transition: 0.2s;
+    }
+    button:hover { opacity: 0.8; }
+
+    .correct { background: #2ecc71 !important; color: #000 !important; }
+    .wrong { background: #e74c3c !important; color: #000 !important; }
+
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Tebak Kata</h1>
+
+    <div id="progress"><div id="progress-bar"></div></div>
+
+    <div id="question">...</div>
+
+    <input id="answer" placeholder="Tulis jawaban..." autocomplete="off" />
+
+    <button id="submit">Cek Jawaban</button>
+
+    <h2 id="score">Skor: 0</h2>
+</div>
+
+<script>
+const questions = [
+    { clue: "Ibukota Indonesia?", answer: "jakarta" },
+    { clue: "Hewan yang bisa terbang?", answer: "burung" },
+    { clue: "Benda untuk menulis?", answer: "pulpen" },
+    { clue: "Air membeku menjadi?", answer: "es" },
+];
+
+let index = 0;
+let score = 0;
+
+const questionText = document.getElementById("question");
+const answerInput = document.getElementById("answer");
+const submitBtn = document.getElementById("submit");
+const scoreText = document.getElementById("score");
+const progressBar = document.getElementById("progress-bar");
+
+function loadQuestion() {
+    questionText.textContent = questions[index].clue;
+    answerInput.value = "";
+    updateProgress();
+}
+
+submitBtn.onclick = () => {
+    const userAns = answerInput.value.trim().toLowerCase();
+    const correctAns = questions[index].answer;
+
+    if (userAns === "") return;
+
+    if (userAns === correctAns) {
+        submitBtn.classList.add("correct");
+        score++;
+        scoreText.textContent = "Skor: " + score;
+    } else {
+        submitBtn.classList.add("wrong");
+    }
+
+    setTimeout(() => {
+        submitBtn.classList.remove("correct", "wrong");
+        index++;
+        if (index < questions.length) loadQuestion();
+        else endGame();
+    }, 800);
+};
+
+function updateProgress() {
+    progressBar.style.width = (index / questions.length) * 100 + "%";
+}
+
+function endGame() {
+    questionText.textContent = `Permainan selesai! Skor akhir: ${score}`;
+    answerInput.style.display = "none";
+    submitBtn.style.display = "none";
+    progressBar.style.width = "100%";
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
