@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tebak Suara Misterius</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #0d0d0d;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+    }
+    .container {
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+    }
+    h1 { font-size: 28px; margin-bottom: 10px; }
+
+    #progress {
+        width: 100%;
+        background: #333;
+        height: 10px;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+    #progress-bar {
+        width: 0%;
+        height: 100%;
+        background: #4caf50;
+        transition: width 0.4s ease;
+    }
+
+    button {
+        width: 100%;
+        margin: 8px 0;
+        padding: 12px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        background: #1e1e1e;
+        color: white;
+        transition: 0.2s;
+    }
+    button:hover { opacity: 0.8; }
+    .correct { background: #2ecc71 !important; color: #000; }
+    .wrong { background: #e74c3c !important; color: #000; }
+
+    audio { margin: 15px 0; }
+
+    @media (max-width: 480px) {
+        h1 { font-size: 22px; }
+        button { font-size: 14px; }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Tebak Suara Misterius</h1>
+
+    <div id="progress"><div id="progress-bar"></div></div>
+
+    <audio id="audio" controls></audio>
+
+    <div id="options"></div>
+
+    <h2 id="score">Skor: 0</h2>
+</div>
+
+<script>
+// DATA SOAL
+const questions = [
+    {
+        sound: "https://www.soundjay.com/button/beep-07.wav",
+        choices: ["Bel pintu", "Kucing", "Kereta", "Air mengalir"],
+        answer: 0
+    },
+    {
+        sound: "https://www.soundjay.com/transportation/train-whistle-01.wav",
+        choices: ["Burung", "Kereta", "Anjing", "Mobil"],
+        answer: 1
+    },
+    {
+        sound: "https://www.soundjay.com/animal/cat-meow-2.wav",
+        choices: ["Kucing", "Ayam", "Sapi", "Serigala"],
+        answer: 0
+    }
+];
+
+let index = 0;
+let score = 0;
+
+const audio = document.getElementById("audio");
+const optionsBox = document.getElementById("options");
+const scoreText = document.getElementById("score");
+const progressBar = document.getElementById("progress-bar");
+
+function loadQuestion() {
+    const q = questions[index];
+
+    audio.src = q.sound;
+    optionsBox.innerHTML = "";
+
+    q.choices.forEach((choice, i) => {
+        const btn = document.createElement("button");
+        btn.textContent = choice;
+        btn.onclick = () => checkAnswer(i, btn);
+        optionsBox.appendChild(btn);
+    });
+
+    updateProgress();
+}
+
+function checkAnswer(i, button) {
+    const q = questions[index];
+
+    // Disable all buttons
+    document.querySelectorAll("button").forEach(b => b.disabled = true);
+
+    if (i === q.answer) {
+        button.classList.add("correct");
+        score++;
+        scoreText.textContent = "Skor: " + score;
+    } else {
+        button.classList.add("wrong");
+        optionsBox.children[q.answer].classList.add("correct");
+    }
+
+    setTimeout(() => {
+        index++;
+        if (index < questions.length) loadQuestion();
+        else finishGame();
+    }, 1000);
+}
+
+function updateProgress() {
+    const progress = ((index) / questions.length) * 100;
+    progressBar.style.width = progress + "%";
+}
+
+function finishGame() {
+    optionsBox.innerHTML = "";
+    audio.style.display = "none";
+    progressBar.style.width = "100%";
+
+    const end = document.createElement("h2");
+    end.textContent = `Permainan Selesai! Skor akhir: ${score}`;
+    optionsBox.appendChild(end);
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
